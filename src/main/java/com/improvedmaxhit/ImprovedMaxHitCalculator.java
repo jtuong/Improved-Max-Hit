@@ -4,6 +4,7 @@ import net.runelite.api.*;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
+import net.runelite.http.api.item.ItemStats;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class ImprovedMaxHitCalculator {
     @Inject
     private ItemManager itemManager;
 
+    private ItemContainer[] currentEquippedItems;
 
     public ImprovedMaxHitCalculator(Client client, ClientThread clientThread, ItemManager itemManager) {
         this.client = client;
@@ -29,25 +31,37 @@ public class ImprovedMaxHitCalculator {
     public void calculate() {
         ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
         printFormattedEquipment(itemContainer);
-        System.out.println(getCurrentStrengthBonus(itemContainer));
+
     }
 
     public void printFormattedEquipment(ItemContainer itemContainer) {
         StringBuilder currentGear = new StringBuilder();
         for (int i = 0; i < itemContainer.size(); i++) {
-            if (i == itemContainer.size() - 1) {
-                currentGear.append(getItemName(itemContainer.getItems()[i].getId()));
-            } else {
-                currentGear.append(getItemName(itemContainer.getItems()[i].getId()) + ", ");
+            String itemName = getItemName(itemContainer.getItems()[i].getId());
+            if (!itemName.equals("null")) {
+                if (i == itemContainer.size() - 1) {
+                    currentGear.append(itemName);
+                } else {
+                    currentGear.append(itemName + ", ");
+                }
             }
+
         }
         System.out.println(currentGear);
+        System.out.println(getCurrentStrengthBonus(itemContainer));
     }
 
     public int getCurrentStrengthBonus(ItemContainer itemContainer) {
         int currentStrengthBonus = 0;
         for (Item item : itemContainer.getItems()) {
-            currentStrengthBonus += Objects.requireNonNull(itemManager.getItemStats(item.getId(), false)).getEquipment().getStr();
+            ItemStats itemStats = itemManager.getItemStats(item.getId(), false);
+            if (item != null && itemStats != null) {
+                int currItemStr = itemStats.getEquipment().getStr();
+                if (currItemStr > 0) {
+                    System.out.println(currItemStr + " added from " + getItemName(item.getId()));
+                }
+                currentStrengthBonus += currItemStr;
+            }
         }
         return currentStrengthBonus;
     }
