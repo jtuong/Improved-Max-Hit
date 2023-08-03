@@ -7,14 +7,19 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.kit.KitType;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Example"
+	name = "Improved Max Hit"
 )
 public class ImprovedMaxHitPlugin extends Plugin
 {
@@ -24,10 +29,27 @@ public class ImprovedMaxHitPlugin extends Plugin
 	@Inject
 	private ImprovedMaxHitConfig config;
 
+	@Inject
+	private ItemManager itemManager;
+
+	@Inject
+	private ClientThread clientThread;
+
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private TooltipManager tooltipManager;
+
+	@Inject
+	private ImprovedMaxHitOverlay improvedMaxHitOverlay;
+
 	@Override
 	protected void startUp() throws Exception
 	{
 		log.info("Example started!");
+		overlayManager.add(improvedMaxHitOverlay);
+
 	}
 
 	@Override
