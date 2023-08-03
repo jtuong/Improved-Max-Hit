@@ -7,7 +7,7 @@ public class ImprovedMaxHitPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(ImprovedMaxHitPlugin.class);
 		RuneLite.main(args);
 	}
 }
